@@ -4,7 +4,7 @@ This project is a small ReactJS application that visualises few 511.org data API
 
 ## What it does
 
-It loads operators (travel agencies available in 511.org APIs) and based on selected operators it loads stops from 511.org. The selected stop in mapped on the google map and the available arrival or departure times are shown 
+It loads operators (travel agencies available in 511.org APIs) and based on selected operators it loads stops from 511.org. The selected stop is shown on the google map and the available arrival or departure times are shown 
 
 ## Adding API keys
 
