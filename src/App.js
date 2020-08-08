@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { getOperators, getStops, getTripUpdates } from './APIs/api';
 import './App.css';
 import TimeDetails from './Components/TimeDetails';
-import { googleAPIKey } from './IConstants';
+import { googleAPIKey } from './Constants';
 
 const { Header, Footer, Sider, Content } = Layout;
 const { SubMenu } = Menu;
