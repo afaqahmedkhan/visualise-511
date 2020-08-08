@@ -1,0 +1,19 @@
+.ant-layout-header {
+  height: fit-content;
+  padding: 0 50px;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 64px;
+  background: #ffff;
+}
+h2 {
+  color: #5d6872;
+}
+h4 {
+  color: #5d6872;
+}
+.ant-layout-sider {
+  flex: auto !important;
+  width: fit-content !important;
+  max-width: fit-content !important;
+  height: 100vh;
+}

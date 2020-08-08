@@ -1,31 +1,32 @@
-import { Card, Form, Select } from "antd";
+import { EnvironmentOutlined, TeamOutlined } from "@ant-design/icons";
+import { Layout, Menu, Select, Spin } from "antd";
 import "antd/dist/antd.css";
 import { GoogleApiWrapper, InfoWindow, Map, Marker } from "google-maps-react";
 import React, { useEffect, useState } from "react";
 import { getOperators, getStops, getTripUpdates } from "./APIs/api";
+import "./App.css";
+import TimeDetails from "./Components/TimeDetails";
 import { googleAPIKey } from "./IConstants";
 
+const { Header, Footer, Sider, Content } = Layout;
+const { SubMenu } = Menu;
 const { Option } = Select;
 
-const layout = {
-  labelCol: { span: 8 },
-  wrapperCol: { span: 16 },
-};
-
-function App(props) {
-  const [operatorId, setOperatorId] = useState();
+const App = (props) => {
   const [operatorsOps, setOperatosOps] = useState();
   const [allScheduledStopPoints, setAllScheduledStopPoints] = useState();
-  const [stopId, setStopId] = useState();
   const [stopOps, setStopOps] = useState();
   const [selectedStopPoint, setSelectedStopPoint] = useState();
   const [activeMarker, setActiveMarker] = useState();
-  const [showingInfoWindow, setShowingInfoWindow] = useState(false);
+  const [showingInfoWindow, setShowingInfoWindow] = useState(true);
+  const [tripUpdates, setTripUpdates] = useState();
+  const [tripUpdatesOfStop, setTripUpdatesOfStop] = useState();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchTripUpdates();
     (async () => {
       try {
+        setLoading(true);
         const res = await getOperators();
         let options = [];
         Array.isArray(res.data) &&
@@ -37,34 +38,13 @@ function App(props) {
             );
           });
         setOperatosOps(options);
+        setLoading(false);
       } catch (err) {
+        setLoading(false);
         throw err;
       }
     })();
   }, []);
-
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const res = await getPatterns();
-  //       let options = [];
-  //       Array.isArray(res.data) &&
-  //         res.data.forEach((operator) => {
-  //           options.push(<Option value={operator.Id}>{operator.Name}</Option>);
-  //         });
-  //       setOperatos(res.data);
-  //       setOperatosOps(options);
-  //     } catch (err) {
-  //       throw err;
-  //     }
-  //   })();
-  // }, []);
-
-  // setOperatos(options);
-  // getPatterns("AC", "19");
-  // getTimeTable("AC", "19");
-  // getLines("SF");
-  // getStops("SF");
 
   const onMarkerClick = (props, marker, e) => {
     setActiveMarker(marker);
@@ -72,29 +52,35 @@ function App(props) {
   };
 
   const onOperatorChange = (value) => {
-    console.log(`selected ${value}`);
     if (!value) {
       return;
     }
-    setOperatorId(value);
+    fetchTripUpdates(value);
     fetchStops(value);
   };
 
   const fetchTripUpdates = async (value) => {
     try {
-      const res = await getTripUpdates("SF");
-      console.log("trips", res);
+      setLoading(true);
+      const res = await getTripUpdates(value);
+      const arr = [];
+      res.forEach((entity) => {
+        arr.push(entity.tripUpdate.stopTimeUpdate);
+      });
+      const flattendTrips = arr.flat();
+      setTripUpdates(flattendTrips);
+      setLoading(false);
     } catch (err) {
+      setLoading(false);
       throw err;
     }
   };
 
   const fetchStops = async (value) => {
     try {
+      setLoading(true);
       const res = await getStops(value);
-      console.log("stops", res);
       let options = [];
-      //Contents.dataObjects.ScheduledStopPoint
       const {
         Contents: {
           dataObjects: { ScheduledStopPoint },
@@ -110,80 +96,134 @@ function App(props) {
         });
       setAllScheduledStopPoints(ScheduledStopPoint);
       setStopOps(options);
+      setLoading(false);
     } catch (err) {
+      setLoading(false);
       throw err;
     }
   };
 
   const onStopChange = (value) => {
-    console.log(`selected ${value}`);
-    setStopId(value);
     const selectedSp =
       Array.isArray(allScheduledStopPoints) &&
       allScheduledStopPoints.find((sp) => sp.id == value);
-    console.log("selectedSp", selectedSp);
+    const result = tripUpdates.find((obj) => {
+      return obj.stopId === selectedSp.id;
+    });
+    setTripUpdatesOfStop(result);
     setSelectedStopPoint(selectedSp);
   };
 
   return (
     <div className="App">
-      {console.log("stopOps", stopOps)}
-      <Form {...layout}>
-        <Form.Item label="Operator" name="operator">
-          <Select
-            showSearch
-            style={{ width: 300 }}
-            placeholder="Select an Operator Company"
-            onChange={onOperatorChange}
-          >
-            {operatorsOps}
-          </Select>
-        </Form.Item>
-
-        <Form.Item label="Stop" name="stop">
-          <Select
-            showSearch
-            style={{ width: 300 }}
-            placeholder="Select a Stop"
-            onChange={onStopChange}
-          >
-            {stopOps}
-          </Select>
-        </Form.Item>
-        <Form.Item>
-          <Card title="Stops Located on Google Maps" style={{ height: 300 }}>
-            <Map
-              google={props.google}
-              center={{
-                lat: selectedStopPoint && selectedStopPoint.Location.Latitude,
-                lng: selectedStopPoint && selectedStopPoint.Location.Longitude,
-              }}
-            >
-              {selectedStopPoint && (
-                <Marker
-                  title={selectedStopPoint.Name}
+      <Spin spinning={loading}>
+        <Layout>
+          <Sider theme="light" breakpoint="lg">
+            <Menu theme="light" mode="inline">
+              <SubMenu key="sub1" icon={<TeamOutlined />} title="Operators">
+                <Menu.Item key="1">
+                  <Select
+                    showSearch
+                    style={{ width: 200 }}
+                    placeholder="Select an Operator Company"
+                    onChange={onOperatorChange}
+                  >
+                    {operatorsOps}
+                  </Select>
+                </Menu.Item>
+              </SubMenu>
+              <SubMenu key="sub2" icon={<EnvironmentOutlined />} title="Stops">
+                <Menu.Item key="2">
+                  <Select
+                    showSearch
+                    style={{ width: 200 }}
+                    placeholder="Select a Stop"
+                    onChange={onStopChange}
+                  >
+                    {stopOps}
+                  </Select>
+                </Menu.Item>
+              </SubMenu>
+            </Menu>
+          </Sider>
+          <Layout>
+            <Header className="site-layout-sub-header-background">
+              <h2>Find arrival and departure times and stop locations </h2>
+              {tripUpdatesOfStop &&
+                console.log("tripUpdatesOfStop", tripUpdatesOfStop)}
+              {tripUpdatesOfStop && (
+                <TimeDetails
                   name={selectedStopPoint.Name}
-                  position={{
-                    lat: selectedStopPoint.Location.Latitude,
-                    lng: selectedStopPoint.Location.Longitude,
-                  }}
-                  onClick={onMarkerClick}
+                  arrivalTime={
+                    tripUpdatesOfStop.arrival &&
+                    new Date(
+                      tripUpdatesOfStop.arrival.time * 1000
+                    ).toLocaleTimeString()
+                  }
+                  departureTime={
+                    tripUpdatesOfStop.departure &&
+                    new Date(
+                      tripUpdatesOfStop.departure.time * 1000
+                    ).toLocaleTimeString()
+                  }
                 />
               )}
-              {selectedStopPoint && (
-                <InfoWindow marker={activeMarker} visible={showingInfoWindow}>
-                  <div>
-                    <h1> {selectedStopPoint.Name} </h1>
-                  </div>
-                </InfoWindow>
-              )}
-            </Map>
-          </Card>
-        </Form.Item>
-      </Form>
+            </Header>
+            <Content style={{ margin: "24px 16px 0" }}>
+              <div
+                className="site-layout-background"
+                style={{
+                  padding: 24,
+                  position: "absolute",
+                  width: "85%",
+                  height: "85%",
+                }}
+              >
+                <Map
+                  google={props.google}
+                  style={{
+                    position: "absolute",
+                    width: "85%",
+                    height: "85%",
+                  }}
+                  center={{
+                    lat:
+                      selectedStopPoint && selectedStopPoint.Location.Latitude,
+                    lng:
+                      selectedStopPoint && selectedStopPoint.Location.Longitude,
+                  }}
+                >
+                  {selectedStopPoint && (
+                    <Marker
+                      title={selectedStopPoint.Name}
+                      name={selectedStopPoint.Name}
+                      position={{
+                        lat: selectedStopPoint.Location.Latitude,
+                        lng: selectedStopPoint.Location.Longitude,
+                      }}
+                      onClick={onMarkerClick}
+                    />
+                  )}
+                  {selectedStopPoint && (
+                    <InfoWindow
+                      marker={activeMarker}
+                      visible={showingInfoWindow}
+                    >
+                      <div>
+                        <h2> {selectedStopPoint.Name} </h2>
+                      </div>
+                    </InfoWindow>
+                  )}
+                </Map>
+              </div>
+            </Content>
+            <Footer style={{ textAlign: "center" }}>MIT License.</Footer>
+          </Layout>
+        </Layout>
+      </Spin>
     </div>
   );
-}
+};
 
 export default GoogleApiWrapper({
   apiKey: googleAPIKey,
