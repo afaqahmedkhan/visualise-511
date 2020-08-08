@@ -149,8 +149,6 @@ const App = (props) => {
           <Layout>
             <Header className="site-layout-sub-header-background">
               <h2>Find arrival and departure times and stop locations </h2>
-              {tripUpdatesOfStop &&
-                console.log("tripUpdatesOfStop", tripUpdatesOfStop)}
               {tripUpdatesOfStop && (
                 <TimeDetails
                   name={selectedStopPoint.Name}

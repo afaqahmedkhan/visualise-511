@@ -72,7 +72,6 @@ export const getTripUpdates = async (operatorId: string) => {
       const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(
         new Uint8Array(bufferRes)
       );
-      console.log("feed.entity", feed.entity);
       return feed.entity;
     }
   } catch (err) {
