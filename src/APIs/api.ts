@@ -1,5 +1,5 @@
-import axios from "axios";
-import { authToken as apiKey, baseUrl } from "../IConstants";
+import axios from 'axios';
+import { authToken as apiKey, baseUrl } from '../Constants';
 
 const addAuthToken = (url: string) => {
   return `${url}api_key=${apiKey}`;
@@ -8,11 +8,11 @@ const addAuthToken = (url: string) => {
 export const getOperators = () => {
   let config = {
     headers: {
-      Accept: "text/html",
-      Cookie: "Version=1",
+      Accept: 'text/html',
+      Cookie: 'Version=1',
     },
   };
-  const url = addAuthToken("/operators?");
+  const url = addAuthToken('/operators?');
   return axios.get(baseUrl + url);
 };
 
@@ -62,7 +62,7 @@ export const getPatterns = async (operatorId: string, lineId: string) => {
 
 export const getTripUpdates = async (operatorId: string) => {
   try {
-    const GtfsRealtimeBindings = require("gtfs-realtime-bindings");
+    const GtfsRealtimeBindings = require('gtfs-realtime-bindings');
     const url = baseUrl + addAuthToken(`/tripupdates?agency=${operatorId}&`);
     const res = await fetch(url);
     //https://stackoverflow.com/questions/47578951/using-node-gtfs-realtime-binding-to-parse-mbta-trip-updates-feed

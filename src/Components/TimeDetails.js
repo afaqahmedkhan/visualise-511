@@ -1,13 +1,17 @@
-import * as React from "react";
+import { Statistic } from 'antd';
+import * as React from 'react';
 
 const TimeDetails = (props) => {
   return (
-    <h4>
-      {props.arrivalTime &&
-        `Arrival time on ${props.name}:  ${props.arrivalTime}`}
-      {props.departureTime &&
-        `Departure time on ${props.name}:  ${props.departureTime}`}
-    </h4>
+    <>
+      <h4>{props.name}</h4>
+      {props.arrivalTime && (
+        <Statistic title='Arrival Time' value={props.arrivalTime} />
+      )}
+      {props.departureTime && (
+        <Statistic title='Departure Time' value={props.departureTime} />
+      )}
+    </>
   );
 };
 

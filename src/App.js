@@ -1,12 +1,12 @@
-import { EnvironmentOutlined, TeamOutlined } from "@ant-design/icons";
-import { Layout, Menu, Select, Spin } from "antd";
-import "antd/dist/antd.css";
-import { GoogleApiWrapper, InfoWindow, Map, Marker } from "google-maps-react";
-import React, { useEffect, useState } from "react";
-import { getOperators, getStops, getTripUpdates } from "./APIs/api";
-import "./App.css";
-import TimeDetails from "./Components/TimeDetails";
-import { googleAPIKey } from "./IConstants";
+import { EnvironmentOutlined, TeamOutlined } from '@ant-design/icons';
+import { Layout, Menu, Select, Spin } from 'antd';
+import 'antd/dist/antd.css';
+import { GoogleApiWrapper, InfoWindow, Map, Marker } from 'google-maps-react';
+import React, { useEffect, useState } from 'react';
+import { getOperators, getStops, getTripUpdates } from './APIs/api';
+import './App.css';
+import TimeDetails from './Components/TimeDetails';
+import { googleAPIKey } from './IConstants';
 
 const { Header, Footer, Sider, Content } = Layout;
 const { SubMenu } = Menu;
@@ -33,7 +33,7 @@ const App = (props) => {
           res.data.forEach((operator) => {
             options.push(
               <Option key={operator.Id} value={operator.Id}>
-                {operator.Id}
+                {operator.Name}
               </Option>
             );
           });
@@ -115,29 +115,29 @@ const App = (props) => {
   };
 
   return (
-    <div className="App">
+    <div className='App'>
       <Spin spinning={loading}>
         <Layout>
-          <Sider theme="light" breakpoint="lg">
-            <Menu theme="light" mode="inline">
-              <SubMenu key="sub1" icon={<TeamOutlined />} title="Operators">
-                <Menu.Item key="1">
+          <Sider theme='light' breakpoint='lg'>
+            <Menu theme='light' mode='inline'>
+              <SubMenu key='sub1' icon={<TeamOutlined />} title='Operators'>
+                <Menu.Item key='1'>
                   <Select
                     showSearch
                     style={{ width: 200 }}
-                    placeholder="Select an Operator Company"
+                    placeholder='Select an Operator Company'
                     onChange={onOperatorChange}
                   >
                     {operatorsOps}
                   </Select>
                 </Menu.Item>
               </SubMenu>
-              <SubMenu key="sub2" icon={<EnvironmentOutlined />} title="Stops">
-                <Menu.Item key="2">
+              <SubMenu key='sub2' icon={<EnvironmentOutlined />} title='Stops'>
+                <Menu.Item key='2'>
                   <Select
                     showSearch
                     style={{ width: 200 }}
-                    placeholder="Select a Stop"
+                    placeholder='Select a Stop'
                     onChange={onStopChange}
                   >
                     {stopOps}
@@ -147,7 +147,7 @@ const App = (props) => {
             </Menu>
           </Sider>
           <Layout>
-            <Header className="site-layout-sub-header-background">
+            <Header className='site-layout-sub-header-background'>
               <h2>Find arrival and departure times and stop locations </h2>
               {tripUpdatesOfStop && (
                 <TimeDetails
@@ -167,22 +167,22 @@ const App = (props) => {
                 />
               )}
             </Header>
-            <Content style={{ margin: "24px 16px 0" }}>
+            <Content style={{ margin: '24px 16px 0' }}>
               <div
-                className="site-layout-background"
+                className='site-layout-background'
                 style={{
                   padding: 24,
-                  position: "absolute",
-                  width: "85%",
-                  height: "85%",
+                  position: 'absolute',
+                  width: '85%',
+                  height: '85%',
                 }}
               >
                 <Map
                   google={props.google}
                   style={{
-                    position: "absolute",
-                    width: "85%",
-                    height: "85%",
+                    position: 'absolute',
+                    width: '85%',
+                    height: '85%',
                   }}
                   center={{
                     lat:
@@ -215,7 +215,7 @@ const App = (props) => {
                 </Map>
               </div>
             </Content>
-            <Footer style={{ textAlign: "center" }}>MIT License.</Footer>
+            <Footer style={{ textAlign: 'center' }}>MIT License.</Footer>
           </Layout>
         </Layout>
       </Spin>
